@@ -9,40 +9,19 @@ from pathlib import Path
 
 try:
     # Add the project directory to the sys.path
-    print("Starting WSGI initialization...")
     path_home = str(Path(__file__).resolve().parent.parent)
     if path_home not in sys.path:
         sys.path.append(path_home)
-        print(f"Added {path_home} to sys.path")
     
-    # Monkey patch Django to bypass database operations on Vercel
+    # Apply Vercel-specific patches
     if os.environ.get('VERCEL_REGION') or os.environ.get('VERCEL'):
-        print("Running on Vercel - applying database operation bypass")
-        
-        # This patch prevents Django from attempting database operations 
-        # during initialization on Vercel's read-only filesystem
-        from django.db.migrations.executor import MigrationExecutor
-        from django.db import connections
-        
-        # Store the original method
-        original_migration_plan = MigrationExecutor.migration_plan
-        
-        # Define a patched method that returns an empty list of migrations
-        def patched_migration_plan(self, targets, clean_start=False):
-            if os.environ.get('VERCEL_REGION') or os.environ.get('VERCEL'):
-                print("Bypassing migration plan on Vercel")
-                return []
-            return original_migration_plan(self, targets, clean_start)
-        
-        # Apply the patch
-        MigrationExecutor.migration_plan = patched_migration_plan
+        from betting_project.vercel import apply_vercel_patches
+        apply_vercel_patches()
     
-    from django.core.wsgi import get_wsgi_application
-    
-    # Check if running on Vercel
+    # Set the settings module
     if os.environ.get('VERCEL_REGION') or os.environ.get('VERCEL'):
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'betting_project.production_settings')
-        print("Using production settings")
+        print("Using production settings on Vercel")
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'betting_project.settings')
         print("Using development settings")
@@ -67,6 +46,7 @@ try:
             f.write('console.log("Vercel deployment");')
     
     # Initialize Django application
+    from django.core.wsgi import get_wsgi_application
     application = get_wsgi_application()
     print("WSGI application initialized successfully")
     

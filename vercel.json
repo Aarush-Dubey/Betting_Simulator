@@ -1,12 +1,14 @@
 {
   "version": 2,
   "buildCommand": "./build_files.sh",
+  "outputDirectory": "betting/betting_sim/staticfiles",
   "builds": [
     {
-      "src": "betting/betting_sim/betting_project/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python",
       "config": { 
-        "maxLambdaSize": "15mb"
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.9"
       }
     }
   ],
@@ -16,13 +18,17 @@
       "dest": "/betting/betting_sim/staticfiles/$1"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "betting/betting_sim/betting_project/wsgi.py"
+      "dest": "/api/index.py"
     }
   ],
   "env": {
     "PYTHONUNBUFFERED": "1",
     "DEBUG": "True",
-    "DISABLE_MIGRATIONS": "1"
+    "DISABLE_MIGRATIONS": "1",
+    "VERCEL": "1"
   }
 } 
