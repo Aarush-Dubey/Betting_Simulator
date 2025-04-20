@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Simulation Results: {{ result.simulation.name }}</h1>
+        <div class="btn-group">
+            <a href="{% url 'simulation:export_result' result.pk %}" class="btn btn-outline-secondary">
+                Export as CSV
+            </a>
+            <a href="{% url 'simulation:detail' result.simulation.pk %}" class="btn btn-primary">
+                Back to Simulation
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Mean Final Bankroll</h5>
+                    <h2 class="card-text text-primary">${{ result.mean_final_bankroll|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Median Final Bankroll</h5>
+                    <h2 class="card-text text-primary">${{ result.median_final_bankroll|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Max Drawdown</h5>
+                    <h2 class="card-text text-danger">{{ result.max_drawdown|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Probability of Ruin</h5>
+                    <h2 class="card-text text-danger">{{ result.probability_of_ruin|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Bankroll Trajectory</h5>
+                </div>
+                <div class="card-body">
+                    <div class="plot-container">
+                        {{ plots.bankroll_trajectory|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Final Bankroll Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="plot-container">
+                        {{ plots.bankroll_histogram|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Outcome Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="plot-container">
+                        {{ plots.outcome_distribution|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Statistics Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Initial Bankroll</td>
+                            <td>${{ result.simulation.initial_bankroll|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Mean Final Bankroll</td>
+                            <td>${{ result.mean_final_bankroll|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Median Final Bankroll</td>
+                            <td>${{ result.median_final_bankroll|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Min Final Bankroll</td>
+                            <td>${{ result.min_final_bankroll|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Max Final Bankroll</td>
+                            <td>${{ result.max_final_bankroll|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Standard Deviation</td>
+                            <td>${{ result.std_final_bankroll|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Probability of Ruin</td>
+                            <td>{{ result.probability_of_ruin|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Max Drawdown</td>
+                            <td>{{ result.max_drawdown|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Number of Rounds</td>
+                            <td>{{ result.simulation.num_rounds }}</td>
+                        </tr>
+                        <tr>
+                            <td>Number of Simulations</td>
+                            <td>{{ result.simulation.num_simulations }}</td>
+                        </tr>
+                        <tr>
+                            <td>Strategy</td>
+                            <td>{{ result.simulation.get_strategy_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Run Date</td>
+                            <td>{{ result.run_date|date:"F j, Y, g:i a" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plot-container {
+        width: 100%;
+        min-height: 400px;
+    }
+</style>
+{% endblock %} 

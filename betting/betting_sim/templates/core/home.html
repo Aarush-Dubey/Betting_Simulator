@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="card-title mb-4">Betting Simulation Platform</h1>
+                <p class="lead">
+                    Design and run sophisticated betting simulations with configurable parameters.
+                </p>
+                <hr>
+                <div class="d-grid gap-2 col-md-6 mx-auto">
+                    <a href="{% url 'simulation:create' %}" class="btn btn-primary btn-lg">
+                        Start New Simulation
+                    </a>
+                    <a href="{% url 'strategies:list' %}" class="btn btn-outline-secondary btn-lg">
+                        Browse Strategies
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Configurable Parameters</h5>
+                        <p class="card-text">
+                            Set starting bankroll, number of rounds, and create custom outcomes 
+                            with unique probabilities and multipliers.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Multiple Strategies</h5>
+                        <p class="card-text">
+                            Choose from fixed fraction, Kelly Criterion, Martingale, or upload your 
+                            own custom strategy.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Rich Visualizations</h5>
+                        <p class="card-text">
+                            Analyze your results with interactive charts showing bankroll progression, 
+                            outcome distributions, and more.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

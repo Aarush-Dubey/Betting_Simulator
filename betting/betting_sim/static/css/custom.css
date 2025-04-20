@@ -1,0 +1,101 @@
+/* Custom styles for the Betting Simulation Platform */
+
+/* Additional card styling */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 0.3rem;
+}
+
+/* Plot containers */
+.plot-container {
+    width: 100%;
+    min-height: 400px;
+    border-radius: 0.3rem;
+}
+
+/* Code display */
+pre {
+    background-color: #f8f9fa;
+    border-radius: 0.3rem;
+    padding: 1rem;
+}
+
+code {
+    color: #212529;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Table hover effect */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Statistics cards on dashboard */
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.stat-card .card-text {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+/* Custom form styling */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Footer */
+footer {
+    background-color: #f8f9fa;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Outcome formset styling */
+.outcome-form {
+    position: relative;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.outcome-form:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+} 

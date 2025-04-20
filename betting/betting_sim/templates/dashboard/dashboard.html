@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Simulations</h5>
+                    <h2 class="card-text text-primary">{{ simulation_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Simulation Runs</h5>
+                    <h2 class="card-text text-primary">{{ result_count }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        {% if best_result %}
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Best Performance</h5>
+                    <h2 class="card-text text-success">${{ best_result.mean_final_bankroll|floatformat:2 }}</h2>
+                    <small class="text-muted">{{ best_result.simulation.name }}</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if worst_result %}
+        <div class="col-md-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Worst Performance</h5>
+                    <h2 class="card-text text-danger">${{ worst_result.mean_final_bankroll|floatformat:2 }}</h2>
+                    <small class="text-muted">{{ worst_result.simulation.name }}</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Simulations</h5>
+                    <a href="{% url 'simulation:create' %}" class="btn btn-sm btn-primary">New Simulation</a>
+                </div>
+                <div class="card-body">
+                    {% if simulations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Strategy</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for simulation in simulations %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'simulation:detail' simulation.pk %}">
+                                                    {{ simulation.name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ simulation.get_strategy_display }}</td>
+                                            <td>{{ simulation.created_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                <a href="{% url 'simulation:run' simulation.pk %}" 
+                                                   class="btn btn-sm btn-success">Run</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center my-4">No simulations created yet.</p>
+                        <div class="d-grid">
+                            <a href="{% url 'simulation:create' %}" class="btn btn-primary">
+                                Create Your First Simulation
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Results</h5>
+                    {% if results|length > 1 %}
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                    type="button" id="compareDropdown" 
+                                    data-bs-toggle="dropdown" 
+                                    aria-expanded="false">
+                                Compare Results
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="compareDropdown">
+                                {% for result in results %}
+                                    <li class="dropdown-item-text fw-bold">{{ result.simulation.name }}</li>
+                                    {% for result2 in results %}
+                                        {% if result2.pk != result.pk %}
+                                            <li>
+                                                <a class="dropdown-item" href="{% url 'dashboard:compare' result.pk result2.pk %}">
+                                                    vs. {{ result2.simulation.name }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if results %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Simulation</th>
+                                        <th>Mean Result</th>
+                                        <th>Run Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                        <tr>
+                                            <td>{{ result.simulation.name }}</td>
+                                            <td>${{ result.mean_final_bankroll|floatformat:2 }}</td>
+                                            <td>{{ result.run_date|date:"M d, Y" }}</td>
+                                            <td>
+                                                <a href="{% url 'simulation:result' result.pk %}" 
+                                                   class="btn btn-sm btn-primary">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center my-4">No simulation results yet.</p>
+                        <div class="d-grid">
+                            {% if simulations %}
+                                <a href="{% url 'simulation:run' simulations.0.pk %}" class="btn btn-success">
+                                    Run a Simulation
+                                </a>
+                            {% else %}
+                                <a href="{% url 'simulation:create' %}" class="btn btn-primary">
+                                    Create a Simulation First
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Getting Started</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>1. Create a Simulation</h5>
+                    <p>
+                        Define your simulation parameters including initial bankroll, 
+                        number of rounds, and betting outcomes with their probabilities.
+                    </p>
+                    <a href="{% url 'simulation:create' %}" class="btn btn-outline-primary">
+                        Create Simulation
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <h5>2. Choose or Upload a Strategy</h5>
+                    <p>
+                        Select a built-in strategy like Fixed Fraction, Kelly Criterion, 
+                        or Martingale, or upload your own custom Python strategy.
+                    </p>
+                    <a href="{% url 'strategies:list' %}" class="btn btn-outline-primary">
+                        Strategy Library
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <h5>3. Run and Analyze</h5>
+                    <p>
+                        Run your simulation with thousands of trials and analyze the results
+                        with interactive visualizations and statistics.
+                    </p>
+                    {% if simulations %}
+                        <a href="{% url 'simulation:run' simulations.0.pk %}" class="btn btn-outline-primary">
+                            Run Simulation
+                        </a>
+                    {% else %}
+                        <button class="btn btn-outline-secondary" disabled>Run Simulation</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

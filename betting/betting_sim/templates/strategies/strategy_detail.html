@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ strategy.name }}</h1>
+        <div class="btn-group">
+            <a href="{% url 'strategies:download' strategy.pk %}" class="btn btn-outline-secondary">
+                Download
+            </a>
+            <a href="{% url 'strategies:update' strategy.pk %}" class="btn btn-primary">
+                Edit
+            </a>
+            <a href="{% url 'strategies:delete' strategy.pk %}" class="btn btn-danger">
+                Delete
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Strategy Information</h5>
+                </div>
+                <div class="card-body">
+                    {% if strategy.description %}
+                        <p class="card-text">{{ strategy.description }}</p>
+                        <hr>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Filename:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ strategy.file_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Uploaded:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ strategy.created_at|date:"F j, Y, g:i a" }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Last Updated:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ strategy.updated_at|date:"F j, Y, g:i a" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Strategy Code</h5>
+                    <div>
+                        <a href="{% url 'strategies:download' strategy.pk %}" class="btn btn-sm btn-outline-secondary">
+                            Download
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <pre class="mb-0"><code class="python p-3">{{ file_contents }}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Using This Strategy</h5>
+        </div>
+        <div class="card-body">
+            <p>
+                To use this strategy in a simulation:
+            </p>
+            <ol>
+                <li>Create a new simulation or edit an existing one</li>
+                <li>Set the strategy type to "Custom Strategy"</li>
+                <li>Select "{{ strategy.name }}" from the custom strategy dropdown</li>
+                <li>Configure other simulation parameters as needed</li>
+                <li>Run the simulation</li>
+            </ol>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{% url 'simulation:create' %}" class="btn btn-primary">
+                    Create New Simulation
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

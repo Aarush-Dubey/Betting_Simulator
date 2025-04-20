@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card col-md-6 mx-auto">
+        <div class="card-body text-center">
+            <h2 class="card-title mb-4">Run Simulation</h2>
+            <p class="lead mb-4">
+                You are about to run the simulation <strong>"{{ simulation.name }}"</strong>.
+            </p>
+            
+            <div class="alert alert-info mb-4">
+                <p class="mb-1"><strong>Configuration:</strong></p>
+                <ul class="list-unstyled text-start">
+                    <li>Initial Bankroll: ${{ simulation.initial_bankroll|floatformat:2 }}</li>
+                    <li>Number of Rounds: {{ simulation.num_rounds }}</li>
+                    <li>Number of Simulations: {{ simulation.num_simulations }}</li>
+                    <li>Strategy: {{ simulation.get_strategy_display }}</li>
+                    {% if simulation.is_parameter_sweep %}
+                        <li>
+                            Parameter Sweep: 
+                            {% if simulation.sweep_parameter == 'bet_fraction' %}Bet Fraction{% elif simulation.sweep_parameter == 'initial_bankroll' %}Initial Bankroll{% endif %}
+                            from {{ simulation.sweep_start|floatformat:2 }} to {{ simulation.sweep_end|floatformat:2 }}
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <p class="mb-4">
+                This may take a moment to complete depending on the complexity of your simulation.
+            </p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{% url 'simulation:detail' simulation.pk %}" class="btn btn-secondary me-md-2">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="spinner"></span>
+                        Run Simulation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const spinner = document.getElementById('spinner');
+        
+        form.addEventListener('submit', function() {
+            spinner.classList.remove('d-none');
+            const button = form.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.textContent = 'Running...';
+            button.prepend(spinner);
+        });
+    });
+</script>
+{% endblock %} 

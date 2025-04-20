@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">
+        {% if form.instance.pk %}
+            Update Strategy
+        {% else %}
+            Upload Strategy
+        {% endif %}
+    </h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Strategy Requirements</h5>
+            <ul>
+                <li>The file must be a Python (.py) file</li>
+                <li>The file must contain a <code>bet_fraction(bankroll, round_idx, history)</code> function</li>
+                <li>The function must return a float between 0.0 and 1.0</li>
+                <li>File size must be under {{ max_file_size_kb|default:"50" }} KB</li>
+            </ul>
+            <div class="alert alert-info">
+                <p class="mb-0">
+                    <strong>Tip:</strong> Download a template file to get started.
+                    <a href="{% url 'strategies:template' %}" class="btn btn-sm btn-outline-primary ms-2">
+                        Download Template
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.file|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'strategies:list' %}" class="btn btn-secondary me-md-2">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if form.instance.pk %}Update{% else %}Upload{% endif %} Strategy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

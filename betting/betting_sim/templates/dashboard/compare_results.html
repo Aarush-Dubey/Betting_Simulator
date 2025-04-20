@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Compare Results</h1>
+        <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ result1.simulation.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Strategy:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result1.simulation.get_strategy_display }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Mean Final Bankroll:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            ${{ result1.mean_final_bankroll|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Probability of Ruin:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result1.probability_of_ruin|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Max Drawdown:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result1.max_drawdown|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Run Date:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result1.run_date|date:"F j, Y" }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 d-grid">
+                        <a href="{% url 'simulation:result' result1.pk %}" class="btn btn-outline-primary">
+                            View Full Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">{{ result2.simulation.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Strategy:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result2.simulation.get_strategy_display }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Mean Final Bankroll:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            ${{ result2.mean_final_bankroll|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Probability of Ruin:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result2.probability_of_ruin|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <strong>Max Drawdown:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result2.max_drawdown|floatformat:2 }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Run Date:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ result2.run_date|date:"F j, Y" }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 d-grid">
+                        <a href="{% url 'simulation:result' result2.pk %}" class="btn btn-outline-danger">
+                            View Full Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Bankroll Trajectory Comparison</h5>
+        </div>
+        <div class="card-body">
+            <div class="plot-container">
+                {{ plots.trajectory_comparison|safe }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Final Bankroll Distribution Comparison</h5>
+        </div>
+        <div class="card-body">
+            <div class="plot-container">
+                {{ plots.histogram_comparison|safe }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Summary Comparison</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Metric</th>
+                            <th>{{ result1.simulation.name }}</th>
+                            <th>{{ result2.simulation.name }}</th>
+                            <th>Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mean Final Bankroll</td>
+                            <td>${{ result1.mean_final_bankroll|floatformat:2 }}</td>
+                            <td>${{ result2.mean_final_bankroll|floatformat:2 }}</td>
+                            <td>
+                                {% with diff=result1.mean_final_bankroll|sub:result2.mean_final_bankroll %}
+                                    {% if diff > 0 %}
+                                        <span class="text-success">+${{ diff|floatformat:2 }}</span>
+                                    {% elif diff < 0 %}
+                                        <span class="text-danger">-${{ diff|abs|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-muted">$0.00</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Median Final Bankroll</td>
+                            <td>${{ result1.median_final_bankroll|floatformat:2 }}</td>
+                            <td>${{ result2.median_final_bankroll|floatformat:2 }}</td>
+                            <td>
+                                {% with diff=result1.median_final_bankroll|sub:result2.median_final_bankroll %}
+                                    {% if diff > 0 %}
+                                        <span class="text-success">+${{ diff|floatformat:2 }}</span>
+                                    {% elif diff < 0 %}
+                                        <span class="text-danger">-${{ diff|abs|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-muted">$0.00</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Standard Deviation</td>
+                            <td>${{ result1.std_final_bankroll|floatformat:2 }}</td>
+                            <td>${{ result2.std_final_bankroll|floatformat:2 }}</td>
+                            <td>
+                                {% with diff=result1.std_final_bankroll|sub:result2.std_final_bankroll %}
+                                    {% if diff > 0 %}
+                                        <span class="text-danger">+${{ diff|floatformat:2 }}</span>
+                                    {% elif diff < 0 %}
+                                        <span class="text-success">-${{ diff|abs|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-muted">$0.00</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Max Drawdown</td>
+                            <td>{{ result1.max_drawdown|floatformat:2 }}</td>
+                            <td>{{ result2.max_drawdown|floatformat:2 }}</td>
+                            <td>
+                                {% with diff=result1.max_drawdown|sub:result2.max_drawdown %}
+                                    {% if diff > 0 %}
+                                        <span class="text-danger">+{{ diff|floatformat:2 }}</span>
+                                    {% elif diff < 0 %}
+                                        <span class="text-success">-{{ diff|abs|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-muted">0.00</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Probability of Ruin</td>
+                            <td>{{ result1.probability_of_ruin|floatformat:2 }}</td>
+                            <td>{{ result2.probability_of_ruin|floatformat:2 }}</td>
+                            <td>
+                                {% with diff=result1.probability_of_ruin|sub:result2.probability_of_ruin %}
+                                    {% if diff > 0 %}
+                                        <span class="text-danger">+{{ diff|floatformat:2 }}</span>
+                                    {% elif diff < 0 %}
+                                        <span class="text-success">-{{ diff|abs|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-muted">0.00</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plot-container {
+        width: 100%;
+        min-height: 400px;
+    }
+</style>
+{% endblock %} 

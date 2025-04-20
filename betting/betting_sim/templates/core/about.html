@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">About Betting Simulation Platform</h1>
+                <hr>
+                
+                <h3>Overview</h3>
+                <p>
+                    The Betting Simulation Platform is a powerful tool for designing, running, and analyzing betting simulations. 
+                    It allows you to model various betting scenarios with configurable parameters and strategies to understand 
+                    long-term outcomes and optimize your approach.
+                </p>
+                
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Configurable Parameters:</strong> Set your starting bankroll, number of rounds, and define custom outcomes with specific probabilities and multipliers.</li>
+                    <li><strong>Multiple Strategies:</strong> Choose from built-in strategies like Fixed Fraction, Kelly Criterion, and Martingale, or create and upload your own custom strategy.</li>
+                    <li><strong>Parameter Sweeping:</strong> Run simulations across a range of parameter values to identify optimal configurations.</li>
+                    <li><strong>Rich Visualizations:</strong> Analyze simulation results with interactive charts and graphs.</li>
+                    <li><strong>Save and Compare:</strong> Save your simulation configurations and results for later analysis and comparison.</li>
+                </ul>
+                
+                <h3>Built-in Strategies</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Strategy</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Fixed Fraction</strong></td>
+                                <td>Bet a fixed percentage of your current bankroll on each round. Simple but effective for managing risk.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kelly Criterion</strong></td>
+                                <td>Optimizes the bet size to maximize the expected logarithm of wealth. Mathematically optimal under certain conditions.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Martingale</strong></td>
+                                <td>Double your bet after each loss to recover previous losses plus a small profit. High risk with potential for catastrophic ruin.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Custom Strategy</strong></td>
+                                <td>Upload your own Python script with a bet_fraction function to implement any custom betting strategy.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Custom Strategy Format</h3>
+                <p>Create a Python file with the following function:</p>
+                <pre class="bg-light p-3"><code>def bet_fraction(bankroll, round_idx, history):
+    """
+    Args:
+        bankroll (float): Current bankroll amount
+        round_idx (int): Current round index (0-based)
+        history (list): List of dictionaries with past results
+                        Each dict has: 
+                        - 'bankroll': bankroll after the round
+                        - 'bet_amount': amount bet
+                        - 'outcome_idx': index of the outcome that occurred
+                        - 'multiplier': the multiplier applied
+                        
+    Returns:
+        float: Fraction of bankroll to bet (0.0 to 1.0)
+    """
+    # Your strategy logic here
+    return 0.1  # Example: always bet 10% of bankroll</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

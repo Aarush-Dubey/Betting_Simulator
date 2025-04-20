@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ simulation.name }}</h1>
+        <div class="btn-group">
+            <a href="{% url 'simulation:run' simulation.pk %}" class="btn btn-success">
+                Run Simulation
+            </a>
+            <a href="{% url 'simulation:edit' simulation.pk %}" class="btn btn-primary">
+                Edit
+            </a>
+            <a href="{% url 'simulation:delete' simulation.pk %}" class="btn btn-danger">
+                Delete
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Simulation Details</h5>
+                </div>
+                <div class="card-body">
+                    {% if simulation.description %}
+                        <p class="card-text">{{ simulation.description }}</p>
+                        <hr>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Initial Bankroll:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            ${{ simulation.initial_bankroll|floatformat:2 }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Number of Rounds:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ simulation.num_rounds }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Bet Fraction:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ simulation.bet_fraction|floatformat:2 }} ({{ simulation.bet_fraction|floatformat:0 }}%)
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Number of Simulations:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ simulation.num_simulations }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Strategy:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ simulation.get_strategy_display }}
+                            {% if simulation.strategy == 'custom' and simulation.custom_strategy %}
+                                ({{ simulation.custom_strategy.name }})
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if simulation.is_parameter_sweep %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Parameter Sweep:</strong>
+                            </div>
+                            <div class="col-md-6">
+                                {% if simulation.sweep_parameter == 'bet_fraction' %}
+                                    Bet Fraction
+                                {% elif simulation.sweep_parameter == 'initial_bankroll' %}
+                                    Initial Bankroll
+                                {% endif %}
+                                from {{ simulation.sweep_start|floatformat:2 }} 
+                                to {{ simulation.sweep_end|floatformat:2 }}
+                                ({{ simulation.sweep_steps }} steps)
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Created:</strong>
+                        </div>
+                        <div class="col-md-6">
+                            {{ simulation.created_at|date:"F j, Y, g:i a" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Outcomes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Probability</th>
+                                    <th>Multiplier</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for outcome in simulation.outcomes.all %}
+                                    <tr>
+                                        <td>{{ outcome.name }}</td>
+                                        <td>{{ outcome.probability|floatformat:2 }}</td>
+                                        <td>{{ outcome.multiplier|floatformat:2 }}×</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Latest Result Section -->
+    {% if latest_result %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Latest Results</h5>
+                <div>
+                    <a href="{% url 'simulation:result' latest_result.pk %}" class="btn btn-sm btn-primary">
+                        View Full Report
+                    </a>
+                    <a href="{% url 'simulation:export_result' latest_result.pk %}" class="btn btn-sm btn-outline-secondary">
+                        Export CSV
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Mean Final</h6>
+                                <h3 class="card-title">${{ latest_result.mean_final_bankroll|floatformat:2 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Median Final</h6>
+                                <h3 class="card-title">${{ latest_result.median_final_bankroll|floatformat:2 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Max Final</h6>
+                                <h3 class="card-title">${{ latest_result.max_final_bankroll|floatformat:2 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Probability of Ruin</h6>
+                                <h3 class="card-title">{{ latest_result.probability_of_ruin|floatformat:2 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

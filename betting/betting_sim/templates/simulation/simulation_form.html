@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">
+        {% if form.instance.pk %}
+            Edit Simulation
+        {% else %}
+            Create New Simulation
+        {% endif %}
+    </h1>
+    
+    <form method="post" class="mb-5">
+        {% csrf_token %}
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Simulation Parameters</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        {{ form.initial_bankroll|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.num_rounds|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.bet_fraction|as_crispy_field }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.num_simulations|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Betting Strategy</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.strategy|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6" id="custom-strategy-container">
+                        {{ form.custom_strategy|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Outcomes</h5>
+            </div>
+            <div class="card-body">
+                {{ outcome_formset.management_form }}
+                <div id="outcome-formset">
+                    {% for form in outcome_formset %}
+                        <div class="outcome-form mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            {{ form.name|as_crispy_field }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            {{ form.probability|as_crispy_field }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            {{ form.multiplier|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    {% if outcome_formset.can_delete %}
+                                        <div class="form-check">
+                                            {{ form.DELETE|as_crispy_field }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-outline-primary" id="add-outcome-btn">
+                        Add Another Outcome
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Parameter Sweep (Optional)</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check mb-3">
+                    {{ form.is_parameter_sweep|as_crispy_field }}
+                </div>
+                
+                <div id="parameter-sweep-container" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{ form.sweep_parameter|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.sweep_start|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.sweep_end|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.sweep_steps|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{% if form.instance.pk %}{% url 'simulation:detail' form.instance.pk %}{% else %}{% url 'simulation:list' %}{% endif %}" class="btn btn-secondary me-md-2">
+                Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                {% if form.instance.pk %}Update{% else %}Create{% endif %} Simulation
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Strategy selector logic
+        const strategySelect = document.getElementById('strategy-select');
+        const customStrategyContainer = document.getElementById('custom-strategy-container');
+        
+        function updateCustomStrategy() {
+            if (strategySelect.value === 'custom') {
+                customStrategyContainer.style.display = 'block';
+            } else {
+                customStrategyContainer.style.display = 'none';
+            }
+        }
+        
+        strategySelect.addEventListener('change', updateCustomStrategy);
+        updateCustomStrategy(); // Initial state
+        
+        // Parameter sweep logic
+        const parameterSweepCheckbox = document.getElementById('is-parameter-sweep');
+        const parameterSweepContainer = document.getElementById('parameter-sweep-container');
+        
+        function updateParameterSweep() {
+            if (parameterSweepCheckbox.checked) {
+                parameterSweepContainer.style.display = 'block';
+            } else {
+                parameterSweepContainer.style.display = 'none';
+            }
+        }
+        
+        parameterSweepCheckbox.addEventListener('change', updateParameterSweep);
+        updateParameterSweep(); // Initial state
+        
+        // Outcome formset logic
+        const addOutcomeBtn = document.getElementById('add-outcome-btn');
+        const outcomeFormset = document.getElementById('outcome-formset');
+        const totalFormsInput = document.getElementById('id_outcomes-TOTAL_FORMS');
+        
+        addOutcomeBtn.addEventListener('click', function() {
+            const forms = outcomeFormset.getElementsByClassName('outcome-form');
+            const formCount = forms.length;
+            
+            // Clone the first form
+            const newForm = forms[0].cloneNode(true);
+            
+            // Update form index
+            const inputs = newForm.getElementsByTagName('input');
+            const selects = newForm.getElementsByTagName('select');
+            const labels = newForm.getElementsByTagName('label');
+            
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].value = '';
+                
+                if (inputs[i].id) {
+                    inputs[i].id = inputs[i].id.replace('-0-', '-' + formCount + '-');
+                    inputs[i].name = inputs[i].name.replace('-0-', '-' + formCount + '-');
+                }
+            }
+            
+            for (let i = 0; i < selects.length; i++) {
+                if (selects[i].id) {
+                    selects[i].id = selects[i].id.replace('-0-', '-' + formCount + '-');
+                    selects[i].name = selects[i].name.replace('-0-', '-' + formCount + '-');
+                }
+            }
+            
+            for (let i = 0; i < labels.length; i++) {
+                if (labels[i].htmlFor) {
+                    labels[i].htmlFor = labels[i].htmlFor.replace('-0-', '-' + formCount + '-');
+                }
+            }
+            
+            // Append new form
+            outcomeFormset.appendChild(newForm);
+            
+            // Update total forms
+            totalFormsInput.value = formCount + 1;
+        });
+    });
+</script>
+{% endblock %} 
