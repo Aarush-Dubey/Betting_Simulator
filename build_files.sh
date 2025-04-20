@@ -3,9 +3,14 @@ set -e  # Exit immediately if a command exits with a non-zero status
 
 echo "Building files for Vercel deployment..."
 
+# Verify Python version
+echo "Python version:"
+python --version
+
 # Install dependencies
 echo "Installing dependencies..."
-pip install -r requirements.txt
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r requirements.txt
 
 # Clean up unnecessary files
 echo "Cleaning up unnecessary files..."

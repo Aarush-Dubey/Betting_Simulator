@@ -29,6 +29,7 @@
     "PYTHONUNBUFFERED": "1",
     "DEBUG": "True",
     "DISABLE_MIGRATIONS": "1",
-    "VERCEL": "1"
+    "VERCEL": "1",
+    "PYTHON_VERSION": "3.9"
   }
 } 
