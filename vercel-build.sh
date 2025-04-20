@@ -15,7 +15,8 @@ python -m pip --version || python3 -m pip --version
 
 # Use our dedicated requirements file for Vercel
 echo "Installing dependencies from vercel-requirements.txt..."
-python -m pip install -r vercel-requirements.txt || python3 -m pip install -r vercel-requirements.txt
+# Force pip to use binary wheels and avoid compilation
+python -m pip install --only-binary=:all: -r vercel-requirements.txt || python3 -m pip install --only-binary=:all: -r vercel-requirements.txt
 
 # Navigate to Django project directory
 cd betting/betting_sim

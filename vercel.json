@@ -1,20 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "bash setup-env.sh && bash vercel-build.sh",
+  "buildCommand": "bash vercel-build.sh",
   "installCommand": "echo 'Skipping automatic install'",
   "builds": [
     {
       "src": "betting/betting_sim/betting_project/wsgi.py",
       "use": "@vercel/python@3.1.0",
       "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "betting/betting_sim/staticfiles",
-        "zeroConfig": true
-      }
     }
   ],
   "routes": [
@@ -26,9 +18,5 @@
       "src": "/(.*)",
       "dest": "betting/betting_sim/betting_project/wsgi.py"
     }
-  ],
-  "env": {
-    "PYTHONPATH": ".",
-    "VERCEL_FORCE_PYTHON_VERSION": "3.9"
-  }
+  ]
 } 
