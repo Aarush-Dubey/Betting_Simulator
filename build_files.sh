@@ -2,13 +2,15 @@
 # Exit on error
 set -o errexit
 
-echo "Installing dependencies..."
+echo "Building static files..."
+
+# Install dependencies
 pip install -r requirements.txt
 
-echo "Collecting static files..."
-python betting_sim/manage.py collectstatic --noinput
+# Navigate to the correct Django project directory
+cd betting/betting_sim
 
-echo "Running migrations..."
-python betting_sim/manage.py migrate
+# Collect static files
+python manage.py collectstatic --noinput --settings=betting_project.production_settings
 
-echo "Build completed!" 
+echo "Build complete!" 
