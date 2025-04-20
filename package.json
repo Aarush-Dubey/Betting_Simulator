@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Betting Simulator Project",
   "scripts": {
-    "build": "bash build_files.sh"
+    "build": "bash vercel-build.sh"
   },
   "engines": {
     "node": ">=14.0.0"
