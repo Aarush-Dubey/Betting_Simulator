@@ -7,6 +7,8 @@ from django.http import HttpResponse
 import os
 import sys
 import platform
+import django
+from django.conf import settings
 
 
 class HomeView(TemplateView):
@@ -107,4 +109,30 @@ def welcome(request):
     </body>
     </html>
     """
-    return HttpResponse(html) 
+    return HttpResponse(html)
+
+
+def debug_info(request):
+    """View to display debug information about the environment and settings."""
+    debug_data = [
+        f"<h1>Django Debug Info</h1>",
+        f"<h2>Environment</h2>",
+        f"<p>Django Version: {django.get_version()}</p>",
+        f"<p>Python Version: {sys.version}</p>",
+        f"<p>WSGI Application: {settings.WSGI_APPLICATION}</p>",
+        f"<p>Installed Apps: {', '.join(settings.INSTALLED_APPS)}</p>",
+        f"<h2>Database</h2>",
+        f"<p>Database Engine: {settings.DATABASES['default']['ENGINE']}</p>",
+        f"<p>Database Name: {settings.DATABASES['default']['NAME']}</p>",
+        f"<h2>Static Files</h2>",
+        f"<p>Static URL: {settings.STATIC_URL}</p>",
+        f"<p>Static Root: {settings.STATIC_ROOT}</p>",
+        f"<h2>Environment Variables</h2>",
+    ]
+    
+    # Add environment variables (excluding sensitive ones)
+    for key, value in os.environ.items():
+        if not any(x in key.lower() for x in ['secret', 'password', 'key']):
+            debug_data.append(f"<p>{key}: {value}</p>")
+    
+    return HttpResponse("<br>".join(debug_data)) 

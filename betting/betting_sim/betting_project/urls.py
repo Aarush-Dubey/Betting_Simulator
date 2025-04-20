@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from core.views import welcome
+from core.views import welcome, debug_info
 
 urlpatterns = [
     # Debug welcome page at the root URL
@@ -17,6 +17,7 @@ urlpatterns = [
     path('simulation/', include('simulation.urls')),
     path('strategies/', include('strategies.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('debug-info/', debug_info, name='debug_info'),
 ]
 
 # Serve static and media files during development

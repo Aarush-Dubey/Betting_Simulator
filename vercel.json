@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "./build.sh",
+  "buildCommand": "./build_files.sh",
   "builds": [
     {
       "src": "betting/betting_sim/betting_project/wsgi.py",

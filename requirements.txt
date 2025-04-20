@@ -4,4 +4,9 @@ gunicorn==21.2.0
 whitenoise==6.5.0
 django-crispy-forms==2.0
 crispy-bootstrap5==0.7
-dj-database-url==2.1.0 
+dj-database-url==2.1.0
+
+# Core dependencies - no build required
+pytz==2023.3
+asgiref==3.7.2
+sqlparse==0.4.4 
