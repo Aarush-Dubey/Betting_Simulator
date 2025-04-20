@@ -1,15 +1,23 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "betting_sim/betting_project/wsgi.py",
       "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
+      "config": { "maxLambdaSize": "30mb", "runtime": "python3.9" }
+    },
+    {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "betting_sim/staticfiles"
+      }
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/betting_sim/static/$1"
+      "dest": "/static/$1"
     },
     {
       "src": "/(.*)",
