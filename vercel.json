@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "bash build_files.sh",
+  "buildCommand": "bash setup-env.sh && bash vercel-build.sh",
+  "installCommand": "echo 'Skipping automatic install'",
   "builds": [
     {
       "src": "betting/betting_sim/betting_project/wsgi.py",

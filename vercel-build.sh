@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is specifically for Vercel deployment
-set -x  # Print commands and their arguments as they are executed
+set -ex  # Print commands and exit on any error
 
 echo "Starting Vercel build process..."
 
@@ -9,14 +9,23 @@ echo "Starting Vercel build process..."
 echo "Current directory: $(pwd)"
 ls -la
 
-# Check Python and pip availability
-echo "Python and pip availability:"
-python3 --version || python --version || echo "No Python found"
-python3 -m pip --version || python -m pip --version || echo "No pip module found"
+# Export the Python path to ensure we're using 3.9
+export PATH="/vercel/.local/bin/python3.9/bin:/vercel/path0/python3.9/bin:$PATH"
 
-# Install dependencies (setuptools should already be installed by setup-env.sh)
-echo "Installing project dependencies..."
-python3 -m pip install --no-cache-dir -r requirements-vercel.txt || python -m pip install --no-cache-dir -r requirements-vercel.txt
+# Create a minimal requirements file
+cat > minimal-requirements.txt << 'EOL'
+Django==4.2.7
+python-dotenv==1.0.0
+gunicorn==21.2.0
+whitenoise==6.5.0
+django-crispy-forms==2.0
+crispy-bootstrap5==0.7
+dj-database-url==2.1.0
+EOL
+
+# Install minimal dependencies for deployment
+echo "Installing minimal dependencies..."
+$PYTHON_CMD -m pip install -r minimal-requirements.txt
 
 # Navigate to Django project directory
 cd betting/betting_sim
@@ -31,29 +40,19 @@ ls -la static/ || echo "Static directory not found"
 mkdir -p staticfiles
 chmod -R 755 staticfiles
 
-# Create a manifest file for testing
-echo "Creating test files in staticfiles"
-echo "Test file for Vercel deployment" > staticfiles/test.txt
-
-# Create some base static files to ensure the directory isn't empty
+# Create some essential static files
+echo "Creating essential static files in staticfiles"
 mkdir -p staticfiles/css staticfiles/js
 echo "body { font-family: Arial, sans-serif; }" > staticfiles/css/style.css
 echo "console.log('Vercel deployment test');" > staticfiles/js/main.js
+echo "Static files created successfully!" > staticfiles/index.txt
 
 # Try to collect static files
 echo "Attempting to collect static files..."
-python3 manage.py collectstatic --noinput --settings=betting_project.production_settings -v 3 || python manage.py collectstatic --noinput --settings=betting_project.production_settings -v 3 || echo "Static file collection failed, using fallback files"
+$PYTHON_CMD manage.py collectstatic --noinput --settings=betting_project.production_settings || echo "Using fallback static files only"
 
-# Check if the collection was successful
-echo "Checking staticfiles directory after collection:"
+# Check the staticfiles directory
+echo "Final staticfiles directory contents:"
 ls -la staticfiles/
-
-# Make sure something exists in the output directory (now we should have at least our manually created files)
-if [ -z "$(ls -A staticfiles/ 2>/dev/null)" ]; then
-    echo "ERROR: staticfiles directory is empty despite fallback files - this should not happen"
-else
-    echo "Staticfiles directory contains files - good to go!"
-    ls -la staticfiles/
-fi
 
 echo "Vercel build process complete!" 
