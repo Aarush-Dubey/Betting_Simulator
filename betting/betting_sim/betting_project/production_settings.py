@@ -28,15 +28,15 @@ else:
         }
     }
 
-# Static files configuration
+# Static files configuration - simplified for Vercel
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Whitenoise for static files serving
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use simpler storage for Vercel deployment
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
