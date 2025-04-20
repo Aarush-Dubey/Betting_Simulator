@@ -1,10 +1,11 @@
 {
   "version": 2,
+  "framework": "django",
   "buildCommand": "./build_files.sh",
   "outputDirectory": "betting/betting_sim/staticfiles",
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "wsgi.py",
       "use": "@vercel/python",
       "config": { 
         "maxLambdaSize": "15mb",
@@ -22,7 +23,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.py"
+      "dest": "/wsgi.py"
     }
   ],
   "env": {
@@ -30,6 +31,7 @@
     "DEBUG": "True",
     "DISABLE_MIGRATIONS": "1",
     "VERCEL": "1",
-    "PYTHON_VERSION": "3.9"
+    "PYTHON_VERSION": "3.9",
+    "DJANGO_SETTINGS_MODULE": "betting_project.production_settings"
   }
 } 

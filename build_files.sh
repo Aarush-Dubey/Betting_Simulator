@@ -12,6 +12,9 @@ echo "Installing dependencies..."
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install -r requirements.txt
 
+# Make manage.py executable
+chmod +x manage.py
+
 # Clean up unnecessary files
 echo "Cleaning up unnecessary files..."
 find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -26,10 +29,14 @@ echo "Creating placeholder static files..."
 echo "body { font-family: Arial, sans-serif; }" > betting/betting_sim/staticfiles/css/style.css
 echo "console.log(\"Vercel deployment\");" > betting/betting_sim/staticfiles/js/main.js
 
-# Go to Django project directory and collect static files
-echo "Collecting static files..."
+# Try both collect static methods - from root and from project
+echo "Collecting static files from root directory..."
+python manage.py collectstatic --noinput --settings=betting_project.production_settings || echo "Root collectstatic failed, trying from project dir..."
+
+# Go to Django project directory and collect static files as fallback
+echo "Collecting static files from project directory..."
 cd betting/betting_sim
-python manage.py collectstatic --noinput --settings=betting_project.production_settings
+python manage.py collectstatic --noinput --settings=betting_project.production_settings || echo "Project dir collectstatic failed too. Check the logs."
 
 # Verify static files
 echo "Verifying static files directory..."
