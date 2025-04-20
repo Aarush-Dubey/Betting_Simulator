@@ -18,5 +18,9 @@
       "src": "/(.*)",
       "dest": "betting/betting_sim/betting_project/wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "DEBUG": "True"
+  }
 } 

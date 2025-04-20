@@ -5,10 +5,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from core.views import welcome
 
 urlpatterns = [
+    # Debug welcome page at the root URL
+    path('', welcome, name='welcome'),
+    
+    # Original URL patterns
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
+    path('core/', include('core.urls')),
     path('simulation/', include('simulation.urls')),
     path('strategies/', include('strategies.urls')),
     path('dashboard/', include('dashboard.urls')),
