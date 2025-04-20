@@ -15,6 +15,28 @@ try:
         sys.path.append(path_home)
         print(f"Added {path_home} to sys.path")
     
+    # Monkey patch Django to bypass database operations on Vercel
+    if os.environ.get('VERCEL_REGION') or os.environ.get('VERCEL'):
+        print("Running on Vercel - applying database operation bypass")
+        
+        # This patch prevents Django from attempting database operations 
+        # during initialization on Vercel's read-only filesystem
+        from django.db.migrations.executor import MigrationExecutor
+        from django.db import connections
+        
+        # Store the original method
+        original_migration_plan = MigrationExecutor.migration_plan
+        
+        # Define a patched method that returns an empty list of migrations
+        def patched_migration_plan(self, targets, clean_start=False):
+            if os.environ.get('VERCEL_REGION') or os.environ.get('VERCEL'):
+                print("Bypassing migration plan on Vercel")
+                return []
+            return original_migration_plan(self, targets, clean_start)
+        
+        # Apply the patch
+        MigrationExecutor.migration_plan = patched_migration_plan
+    
     from django.core.wsgi import get_wsgi_application
     
     # Check if running on Vercel

@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "./build.sh",
   "builds": [
     {
       "src": "betting/betting_sim/betting_project/wsgi.py",
@@ -21,6 +22,7 @@
   ],
   "env": {
     "PYTHONUNBUFFERED": "1",
-    "DEBUG": "True"
+    "DEBUG": "True",
+    "DISABLE_MIGRATIONS": "1"
   }
 } 

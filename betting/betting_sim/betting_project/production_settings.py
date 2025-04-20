@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-for-development')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Temporarily enable debug for troubleshooting
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Update allowed hosts for production
 ALLOWED_HOSTS = ['*']  # Allow all hosts for now
@@ -67,16 +67,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'betting_project.wsgi.application'
 
-# Database - use SQLite for simplicity in production (read-only)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database configuration
+# For Vercel, we use an in-memory SQLite database since the filesystem is read-only
+if os.environ.get('VERCEL_REGION') or os.environ.get('VERCEL'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',  # In-memory database
+        }
     }
-}
+else:
+    # For local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
-# Password validation
-AUTH_PASSWORD_VALIDATORS = []  # Simplified for debugging
+# Password validation - simplified for Vercel
+AUTH_PASSWORD_VALIDATORS = []
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -107,4 +117,22 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Login and logout URLs
 LOGIN_REDIRECT_URL = 'core:home'
-LOGOUT_REDIRECT_URL = 'core:home' 
+LOGOUT_REDIRECT_URL = 'core:home'
+
+# Logging - helpful for debugging
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'INFO',
+            },
+        },
+    } 
