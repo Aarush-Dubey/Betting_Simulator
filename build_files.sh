@@ -1,16 +1,8 @@
 #!/bin/bash
-
-echo "Building static files..."
-
-# Debug information
-echo "Current directory: $(pwd)"
-echo "Python version: $(command -v python3 || command -v python)"
-
-# Install Python dependencies
-python3 -m pip install -r requirements.txt || python -m pip install -r requirements.txt
-
-# Navigate to Django project directory and collect static files
-cd betting/betting_sim
-python3 manage.py collectstatic --noinput --settings=betting_project.production_settings || python manage.py collectstatic --noinput --settings=betting_project.production_settings
-
-echo "Build complete!" 
+# Simple build script for Vercel deployment
+echo "Creating static files directory..."
+mkdir -p betting/betting_sim/staticfiles/css betting/betting_sim/staticfiles/js
+echo "Creating basic static files..."
+echo "body { font-family: Arial, sans-serif; }" > betting/betting_sim/staticfiles/css/style.css
+echo "console.log(\"Vercel deployment\");" > betting/betting_sim/staticfiles/js/main.js
+echo "Build complete!"

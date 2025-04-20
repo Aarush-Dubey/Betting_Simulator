@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "bash vercel-build.sh",
-  "installCommand": "echo 'Skipping automatic install'",
   "builds": [
     {
       "src": "betting/betting_sim/betting_project/wsgi.py",
-      "use": "@vercel/python@3.1.0",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
+      "use": "@vercel/python",
+      "config": { 
+        "maxLambdaSize": "15mb"
+      }
     }
   ],
   "routes": [
