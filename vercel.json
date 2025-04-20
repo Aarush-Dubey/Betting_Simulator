@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "bash build_files.sh",
   "builds": [
     {
       "src": "betting/betting_sim/betting_project/wsgi.py",
@@ -7,11 +8,8 @@
       "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
     },
     {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "betting/betting_sim/staticfiles"
-      }
+      "src": "betting/betting_sim/staticfiles/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
