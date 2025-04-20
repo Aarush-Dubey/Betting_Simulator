@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Betting Simulator Project",
   "scripts": {
-    "build": "bash setup-env.sh && PYTHON_CMD=$(which python3.9 || which python3 || which python) bash vercel-build.sh",
-    "vercel-build": "bash setup-env.sh && PYTHON_CMD=$(which python3.9 || which python3 || which python) bash vercel-build.sh"
+    "build": "bash setup-env.sh && bash vercel-build.sh",
+    "vercel-build": "bash setup-env.sh && bash vercel-build.sh"
   },
   "engines": {
     "node": ">=14.0.0"

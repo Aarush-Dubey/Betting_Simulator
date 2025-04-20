@@ -9,23 +9,13 @@ echo "Starting Vercel build process..."
 echo "Current directory: $(pwd)"
 ls -la
 
-# Export the Python path to ensure we're using 3.9
-export PATH="/vercel/.local/bin/python3.9/bin:/vercel/path0/python3.9/bin:$PATH"
+# Print Python version
+python --version || python3 --version
+python -m pip --version || python3 -m pip --version
 
-# Create a minimal requirements file
-cat > minimal-requirements.txt << 'EOL'
-Django==4.2.7
-python-dotenv==1.0.0
-gunicorn==21.2.0
-whitenoise==6.5.0
-django-crispy-forms==2.0
-crispy-bootstrap5==0.7
-dj-database-url==2.1.0
-EOL
-
-# Install minimal dependencies for deployment
-echo "Installing minimal dependencies..."
-$PYTHON_CMD -m pip install -r minimal-requirements.txt
+# Use our dedicated requirements file for Vercel
+echo "Installing dependencies from vercel-requirements.txt..."
+python -m pip install -r vercel-requirements.txt || python3 -m pip install -r vercel-requirements.txt
 
 # Navigate to Django project directory
 cd betting/betting_sim
@@ -49,7 +39,7 @@ echo "Static files created successfully!" > staticfiles/index.txt
 
 # Try to collect static files
 echo "Attempting to collect static files..."
-$PYTHON_CMD manage.py collectstatic --noinput --settings=betting_project.production_settings || echo "Using fallback static files only"
+python manage.py collectstatic --noinput --settings=betting_project.production_settings -v 3 || python3 manage.py collectstatic --noinput --settings=betting_project.production_settings -v 3 || echo "Using fallback static files only"
 
 # Check the staticfiles directory
 echo "Final staticfiles directory contents:"
