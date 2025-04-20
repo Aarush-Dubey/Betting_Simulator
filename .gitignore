@@ -33,6 +33,7 @@ staticfiles/
 venv/
 env/
 ENV/
+betting/venv/
 
 # Environment variables
 .env
