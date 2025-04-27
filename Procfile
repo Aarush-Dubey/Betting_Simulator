@@ -1,1 +1,0 @@
-web: gunicorn --chdir betting/betting_sim betting_project.wsgi:application 
